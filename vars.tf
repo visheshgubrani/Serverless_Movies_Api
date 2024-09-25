@@ -16,6 +16,3 @@ variable "role_name" {}
 
 variable "api_key" {}
 variable "accountId" {}
-
-variable "lambda_basic_policy" {}
-variable "lambda_dynamodb_read_policy" {}

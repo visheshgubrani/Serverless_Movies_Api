@@ -4,6 +4,7 @@ variable "output_path" {}
 variable "handler" {}
 variable "role_arn" {}
 variable "lambda_runtime" {}
+variable "timeout" {}
 variable "set_environment" {
   description = "Set to true if environment variables should be configured"
   type        = bool

@@ -31,6 +31,7 @@ module "lambda_get_movies" {
   output_path = "${path.module}/modules/lambda/getMovies/get-movies.zip"
   lambda_runtime = "nodejs20.x"
   role_arn = module.lambda_iam_policy.lambda_role_arn
+  timeout = 3
 
   set_environment = false
 }
@@ -41,9 +42,10 @@ module "lambda_get_movies_by_year" {
   function_name = "getMoviesByYear"
   handler = "index.handler"
   source_dir = "${path.module}/modules/lambda/getMoviesByYear"
-  output_path = "${path.module}/modules/lambda/getMovies/get-movies_by_year.zip"
+  output_path = "${path.module}/modules/lambda/getMoviesByYear/get-movies_by_year.zip"
   lambda_runtime = "nodejs20.x"
   role_arn = module.lambda_iam_policy.lambda_role_arn
+  timeout = 3
 
   set_environment = false
 }
@@ -51,12 +53,13 @@ module "lambda_get_movies_by_year" {
 # Generate Movie Summary
 module "lambda_generate_movie_summary" {
   source = "./modules/lambda"
-  function_name = "getMoviesByYear"
+  function_name = "generateMovieSummary"
   handler = "index.handler"
   source_dir = "${path.module}/modules/lambda/aiGeneratedSummary"
   output_path = "${path.module}/modules/lambda/aiGeneratedSummary/ai_generated_summary.zip"
   lambda_runtime = "nodejs20.x"
   role_arn = module.lambda_iam_policy.lambda_role_arn
+  timeout = 10
 
   set_environment = true
   environment_variables = {
@@ -71,7 +74,7 @@ module "api_gateway" {
   uri_get_movies = module.lambda_get_movies.get_movies_arn
   uri_by_year = module.lambda_get_movies_by_year.get_movies_by_year_arn
   uri_generate_summary = module.lambda_generate_movie_summary.summary_arn
-  function_name_by_year = module.lambda_get_movies.getmoviesbyyear
+  function_name_by_year = module.lambda_get_movies_by_year.getmoviesbyyear
   function_name_generate_summary = module.lambda_generate_movie_summary.generatemoviesummary
   function_name_get_movies = module.lambda_get_movies.get_movies
   accountId = var.accountId
