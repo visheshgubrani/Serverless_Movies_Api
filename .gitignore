@@ -39,3 +39,4 @@ terraform.rc
 .terraform.lock.hcl
 # ZIP files
 *.zip
+node_modules

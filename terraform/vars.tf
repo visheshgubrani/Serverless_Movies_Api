@@ -5,7 +5,7 @@ variable "dynamo_db_read_capacity" {}
 variable "dynamo_db_write_capacity" {}
 variable "dynamo_db_hash_key" {}
 variable "dynamo_db_billing_mode" {}
-
+variable "dynamo_db_table_name" {}
 # s3 Bucket
 variable "s3_bucket_name" {}
 

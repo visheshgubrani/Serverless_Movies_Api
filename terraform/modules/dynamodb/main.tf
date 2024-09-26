@@ -24,16 +24,16 @@ resource "aws_dynamodb_table" "movies-table" {
     name            = "releaseYear-index"
     hash_key        = "releaseYear"
     projection_type = "ALL"
-    read_capacity   = 5
-    write_capacity  = 5
+    read_capacity   = 1
+    write_capacity  = 1
   }
 
   global_secondary_index {
     name            = "title-index"
     hash_key        = "title"
     projection_type = "ALL"
-    read_capacity   = 5
-    write_capacity  = 5
+    read_capacity   = 1
+    write_capacity  = 1
   }
 
   tags = {
