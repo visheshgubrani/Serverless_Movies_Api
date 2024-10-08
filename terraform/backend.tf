@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket            = var.backend_bucket_name
+    bucket            = "terraformstatestoringbucket"
     key               = "terraform.tfstate"
-    region            = var.myregion
+    region            = "ap-south-1"
     encrypt           = true
-    dynamodb_endpoint = var.backen_dynamo_db_endpoint
+    dynamodb_endpoint = "terraform-lock-table"
   }
 }
