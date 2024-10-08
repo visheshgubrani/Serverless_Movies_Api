@@ -1,4 +1,4 @@
-# Modular Serverless Movie API
+# Serverless Movie API
 
 A serverless API built on AWS to provide movie information, implemented using a modular approach with Terraform.
 
@@ -30,7 +30,7 @@ This project implements a modular serverless API using AWS services to display a
 ## Project Structure
 
 ```
-modular-serverless-movie-project/
+serverless-movie-project/
 ├── scripts/
 │   └── upload_movies/
 │       ├── node_modules/
