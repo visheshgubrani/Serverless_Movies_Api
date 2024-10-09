@@ -18,5 +18,3 @@ variable "role_name" {}
 
 variable "api_key" {}
 variable "accountId" {}
-variable "backend_bucket_name" {}
-variable "backen_dynamo_db_endpoint" {}
