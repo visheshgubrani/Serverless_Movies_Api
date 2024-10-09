@@ -8,13 +8,6 @@ on:
     branches:
       - main
 
-env:
-  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-  AWS_REGION: 'ap-south-1'
-  TF_VAR_api_key: ${{ secrets.GEMINI_API_KEY }}
-  TF_VAR_accountId: ${{ secrets.AWS_ACCOUNT_ID }}
-
 jobs:
   terraform:
     name: 'Terraform'
@@ -35,15 +28,22 @@ jobs:
 
       - name: Install Lambda Dependencies
         run: |
-          for dir in terraform/modules/lambda/*/
-          do
-            if [ -f "${dir}package.json" ]; then
-              echo "Installing dependencies in ${dir}"
-              cd "${dir}"
+          lambda_dirs=(
+            "terraform/modules/lambda/aiGeneratedSummary"
+            "terraform/modules/lambda/getMovies"
+            "terraform/modules/lambda/getMoviesByYear"
+          )
+          for dir in "${lambda_dirs[@]}"; do
+            if [ -f "$dir/package.json" ]; then
+              echo "Installing dependencies in $dir"
+              cd "$dir"
               npm ci
-              cd -
-            fi 
+              cd - > /dev/null
+            else
+              echo "No package.json found in $dir"
+            fi
           done
+        shell: bash
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -56,6 +56,12 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -no-color
+        env:
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: 'ap-south-1'
+          TF_VAR_api_key: ${{ secrets.GEMINI_API_KEY }}
+          TF_VAR_accountId: ${{ secrets.AWS_ACCOUNT_ID }}
 
   upload_movies:
     name: 'Upload Movies Data'
