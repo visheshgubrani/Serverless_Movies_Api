@@ -26,25 +26,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Lambda Dependencies
-        run: |
-          lambda_dirs=(
-            "terraform/modules/lambda/aiGeneratedSummary"
-            "terraform/modules/lambda/getMovies"
-            "terraform/modules/lambda/getMoviesByYear"
-          )
-          for dir in "${lambda_dirs[@]}"; do
-            if [ -f "$dir/package.json" ]; then
-              echo "Installing dependencies in $dir"
-              cd "$dir"
-              npm ci
-              cd - > /dev/null
-            else
-              echo "No package.json found in $dir"
-            fi
-          done
-        shell: bash
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
