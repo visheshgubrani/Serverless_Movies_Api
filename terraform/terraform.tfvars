@@ -13,7 +13,4 @@ lambda_basic_policy         = "arn:aws:iam::aws:policy/service-role/AWSLambdaBas
 lambda_dynamodb_read_policy = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
 role_name                   = "iam_policy_for_lambda"
 
-api_key                   = ""
-accountId                 = ""
-backend_bucket_name       = "terraformstatestoringbucket"
-backen_dynamo_db_endpoint = "terraform-lock-table"
+# api_key and accountId will be handled securely via environment variables

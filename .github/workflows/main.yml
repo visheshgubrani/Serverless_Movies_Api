@@ -12,6 +12,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
   AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
   AWS_REGION: 'ap-south-1'
+  TF_VAR_api_key: ${{ secrets.GEMINI_API_KEY }}
+  TF_VAR_accountId: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
   terraform:
@@ -34,9 +36,6 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate -no-color
-
-      - name: Terraform Plan
-        run: terraform plan
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -no-color
