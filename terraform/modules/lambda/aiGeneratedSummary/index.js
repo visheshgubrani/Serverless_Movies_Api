@@ -1,6 +1,6 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
+import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const client = new DynamoDBClient({})
 const doClient = DynamoDBDocumentClient.from(client)
@@ -8,21 +8,21 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY)
 
 export const handler = async (event) => {
   if (!event.pathParameters || !event.pathParameters.movieName) {
-    console.log('Missing movie name parameter')
+    console.log("Missing movie name parameter")
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'Missing parameter' }),
+      body: JSON.stringify({ message: "Missing parameter" }),
     }
   }
   const movieName = decodeURIComponent(event.pathParameters.movieName)
 
   // Query the dynamoDb Table
   const params = {
-    TableName: 'movies',
-    IndexName: 'title-index',
-    KeyConditionExpression: 'title = :title',
+    TableName: "movies",
+    IndexName: "title-index",
+    KeyConditionExpression: "title = :title",
     ExpressionAttributeValues: {
-      ':title': movieName,
+      ":title": movieName,
     },
   }
 
@@ -32,12 +32,12 @@ export const handler = async (event) => {
     if (Items.length === 0) {
       return {
         statusCode: 404,
-        body: JSON.stringify({ message: 'Movie not found' }),
+        body: JSON.stringify({ message: "Movie not found" }),
       }
     }
 
     const movie = Items[0]
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
     const prompt = `Generate a breif summary for the movie titled ${movie.title}, released in ${movie.releaseYear}.`
 
@@ -48,7 +48,10 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Allow all origins
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify({
         ...movie,
@@ -56,10 +59,10 @@ export const handler = async (event) => {
       }),
     }
   } catch (error) {
-    console.log('Error Generation summary', error)
+    console.log("Error Generation summary", error)
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Internal Server Error' }),
+      body: JSON.stringify({ message: "Internal Server Error" }),
     }
   }
 }

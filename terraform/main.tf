@@ -85,20 +85,26 @@ module "cors_integration_getmovies" {
   source      = "./modules/cors"
   resource_id = module.api_gateway.get_movies_resource_id
   rest_api_id = module.api_gateway.rest_api_id
-  methods     = ["GET"]
+  methods     = ["GET", "OPTIONS"]
 }
 
 module "cors_integration_getmoviesbyyear" {
   source      = "./modules/cors"
   resource_id = module.api_gateway.get_movies_by_year_resource_id
   rest_api_id = module.api_gateway.rest_api_id
-  methods     = ["GET"]
+  methods     = ["GET", "OPTIONS"]
 }
 
 module "cors_integration_generatesummary" {
   source      = "./modules/cors"
   resource_id = module.api_gateway.aws_generate_movie_summary_id
   rest_api_id = module.api_gateway.rest_api_id
-  methods     = ["GET"]
+  methods     = ["GET", "OPTIONS"]
 }
 
+module "cloudfront" {
+  source = "./modules/cloudfront"
+  providers = {
+    aws.us-east-1 = aws.us_east_1
+  }
+}

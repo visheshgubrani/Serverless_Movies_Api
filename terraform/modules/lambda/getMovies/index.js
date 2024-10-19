@@ -1,13 +1,13 @@
-import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
-import { unmarshall } from '@aws-sdk/util-dynamodb'
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb"
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb"
+import { unmarshall } from "@aws-sdk/util-dynamodb"
 
 const client = new DynamoDBClient({})
 const doClient = DynamoDBDocumentClient.from(client)
 
 export const handler = async (event) => {
   const params = {
-    TableName: 'movies',
+    TableName: "movies",
   }
 
   try {
@@ -18,18 +18,21 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Allow all origins
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify(movies),
     }
   } catch (error) {
-    console.log('Error Fetching Movies: ', error)
+    console.log("Error Fetching Movies: ", error)
     return {
       statusCode: 500,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ error: 'Unable to fetch movies' }),
+      body: JSON.stringify({ error: "Unable to fetch movies" }),
     }
   }
 }

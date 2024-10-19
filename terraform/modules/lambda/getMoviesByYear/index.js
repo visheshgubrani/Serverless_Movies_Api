@@ -1,25 +1,25 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
+import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb"
 
 const client = new DynamoDBClient({})
 const doClient = DynamoDBDocumentClient.from(client)
 
 export const handler = async (event) => {
   if (!event.pathParameters || !event.pathParameters.year) {
-    console.log('Missing movie year')
+    console.log("Missing movie year")
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'Missing parameter' }),
+      body: JSON.stringify({ message: "Missing parameter" }),
     }
   }
   const year = decodeURIComponent(event.pathParameters.year)
 
   const params = {
-    TableName: 'movies',
-    IndexName: 'releaseYear-index',
-    KeyConditionExpression: 'releaseYear = :releaseYear',
+    TableName: "movies",
+    IndexName: "releaseYear-index",
+    KeyConditionExpression: "releaseYear = :releaseYear",
     ExpressionAttributeValues: {
-      ':releaseYear': year,
+      ":releaseYear": year,
     },
   }
 
@@ -29,15 +29,18 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Allow all origins
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify(Items),
     }
   } catch (error) {
-    console.log('Error fetching movies by year: ', error)
+    console.log("Error fetching movies by year: ", error)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error fetching movies' }),
+      body: JSON.stringify({ error: "Error fetching movies" }),
     }
   }
 }

@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Loader2 } from "lucide-react"
+import Image from "next/image"
 
 type Movie = {
   title: string
@@ -30,7 +31,7 @@ type MovieSummary = Movie & {
   generatedSummary: string
 }
 
-const BASE_URL = "https://8urvifi8bh.execute-api.ap-south-1.amazonaws.com/v1"
+const BASE_URL = "https://y6fyxfdzr3.execute-api.ap-south-1.amazonaws.com/v1"
 
 const MovieExplorer = () => {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -54,7 +55,7 @@ const MovieExplorer = () => {
       setFilteredMovies(data)
       setLoading(false)
     } catch (err) {
-      setError("Failed to load movies. Please try again later.")
+      setError(`Failed to load movies. Please try again later. ${err}`)
       setLoading(false)
     }
   }
@@ -70,7 +71,7 @@ const MovieExplorer = () => {
       const data = await response.json()
       setFilteredMovies(data)
     } catch (err) {
-      setError("Failed to filter movies. Please try again.")
+      setError(`Failed to filter movies. Please try again later. ${err}`)
     }
   }
 
@@ -84,7 +85,7 @@ const MovieExplorer = () => {
       const data = await response.json()
       setSelectedMovie(data)
     } catch (err) {
-      setError("Failed to load movie summary. Please try again.")
+      setError(`Failed to load movie. Please try again later. ${err}`)
     } finally {
       setSummaryLoading(false)
     }
@@ -140,7 +141,7 @@ const MovieExplorer = () => {
                   <CardTitle className="text-lg">{movie.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <img
+                  <Image
                     src={movie.coverUrl}
                     alt={movie.title}
                     className="w-full h-48 object-cover rounded-md"
@@ -158,7 +159,7 @@ const MovieExplorer = () => {
                 <DialogTitle>{movie.title}</DialogTitle>
               </DialogHeader>
               <div className="mt-4">
-                <img
+                <Image
                   src={movie.coverUrl}
                   alt={movie.title}
                   className="w-full h-64 object-cover rounded-md mb-4"
