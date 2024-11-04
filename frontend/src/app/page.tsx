@@ -16,8 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog"
-import { Loader2 } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Loader2, X } from "lucide-react"
 import Image from "next/image"
 
 type Movie = {
@@ -31,7 +33,7 @@ type MovieSummary = Movie & {
   generatedSummary: string
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+const BASE_URL = "https://pvcvk2hpqf.execute-api.ap-south-1.amazonaws.com/v1/"
 
 const MovieExplorer = () => {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -69,11 +71,9 @@ const MovieExplorer = () => {
       const response = await fetch(`${BASE_URL}/getmoviesbyyear/${yearFilter}`)
       if (!response.ok) throw new Error("Failed to fetch movies by year")
       const data = await response.json()
-      // Directly set the filtered data without clearing first
       setFilteredMovies(data)
     } catch (err) {
       setError(`Failed to filter movies. Please try again later. ${err}`)
-      // On error, show all movies instead of empty state
       setFilteredMovies(movies)
     }
   }
@@ -96,7 +96,7 @@ const MovieExplorer = () => {
 
   const resetFilters = () => {
     setYearFilter("")
-    setFilteredMovies(movies) // Reset to original movies instead of fetching again
+    setFilteredMovies(movies)
   }
 
   if (loading)
@@ -120,22 +120,28 @@ const MovieExplorer = () => {
       >
         Movie Explorer
       </h1>
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <Input
           type="text"
           placeholder="Filter by year"
           value={yearFilter}
           onChange={(e) => setYearFilter(e.target.value)}
-          className="max-w-xs"
+          className="max-w-xs w-full"
         />
-        <Button onClick={filterMoviesByYear}>Filter</Button>
+        <Button onClick={filterMoviesByYear} className="w-full sm:w-auto">
+          Filter
+        </Button>
         {yearFilter && (
-          <Button variant="outline" onClick={resetFilters}>
+          <Button
+            variant="outline"
+            onClick={resetFilters}
+            className="w-full sm:w-auto"
+          >
             Reset
           </Button>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {filteredMovies.map((movie, index) => (
           <Dialog key={`${movie.title}-${index}`}>
             <DialogTrigger asChild>
@@ -159,46 +165,52 @@ const MovieExplorer = () => {
                 </CardFooter>
               </Card>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-hidden flex flex-col">
               <DialogHeader>
                 <DialogTitle>{movie.title}</DialogTitle>
               </DialogHeader>
-              <div className="mt-4">
-                <Image
-                  src={movie.coverUrl}
-                  alt={movie.title}
-                  width={600}
-                  height={384}
-                  className="w-full h-64 object-cover rounded-md mb-4"
-                />
-                <p>
-                  <strong>Year:</strong> {movie.releaseYear}
-                </p>
-                <p>
-                  <strong>Genre:</strong> {movie.genre}
-                </p>
-                {selectedMovie && selectedMovie.title === movie.title && (
-                  <p className="mt-4">
-                    <strong>Summary:</strong> {selectedMovie.generatedSummary}
+              <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </DialogClose>
+              <ScrollArea className="flex-grow">
+                <div className="p-4 pb-8">
+                  <Image
+                    src={movie.coverUrl}
+                    alt={movie.title}
+                    width={600}
+                    height={384}
+                    className="w-full h-64 object-cover rounded-md mb-4"
+                  />
+                  <p>
+                    <strong>Year:</strong> {movie.releaseYear}
                   </p>
-                )}
-                {(!selectedMovie || selectedMovie.title !== movie.title) && (
-                  <Button
-                    onClick={() => fetchMovieSummary(movie.title)}
-                    className="mt-4"
-                    disabled={summaryLoading}
-                  >
-                    {summaryLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Summary...
-                      </>
-                    ) : (
-                      "Generate Summary"
-                    )}
-                  </Button>
-                )}
-              </div>
+                  <p>
+                    <strong>Genre:</strong> {movie.genre}
+                  </p>
+                  {selectedMovie && selectedMovie.title === movie.title && (
+                    <p className="mt-4">
+                      <strong>Summary:</strong> {selectedMovie.generatedSummary}
+                    </p>
+                  )}
+                  {(!selectedMovie || selectedMovie.title !== movie.title) && (
+                    <Button
+                      onClick={() => fetchMovieSummary(movie.title)}
+                      className="mt-4"
+                      disabled={summaryLoading}
+                    >
+                      {summaryLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating Summary...
+                        </>
+                      ) : (
+                        "Generate Summary"
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </ScrollArea>
             </DialogContent>
           </Dialog>
         ))}
