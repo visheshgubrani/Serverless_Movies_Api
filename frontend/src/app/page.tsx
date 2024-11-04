@@ -33,7 +33,7 @@ type MovieSummary = Movie & {
   generatedSummary: string
 }
 
-const BASE_URL = "https://pvcvk2hpqf.execute-api.ap-south-1.amazonaws.com/v1/"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 const MovieExplorer = () => {
   const [movies, setMovies] = useState<Movie[]>([])
