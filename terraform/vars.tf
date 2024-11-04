@@ -9,7 +9,7 @@ variable "dynamo_db_table_name" {
   default = "movies"
 }
 # s3 Bucket
-variable "s3_bucket_name" {}
+variable "cover_images_s3_bucket_name" {}
 
 # Lambda IAM Policy
 variable "lambda_basic_policy" {}
@@ -22,3 +22,8 @@ variable "api_key" {
 variable "accountId" {
   sensitive = true
 }
+
+variable "static_site_bucket_name" {}
+variable "root_domain" {}
+variable "domain_aliases" {}
+variable "certificate_sans" {}

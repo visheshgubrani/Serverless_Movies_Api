@@ -1,6 +1,6 @@
 # S3 Bucket Configuration
 resource "aws_s3_bucket" "b" {
-  bucket = "forstaticxfilesweb"
+  bucket = var.static_site_bucket_name
 }
 
 resource "aws_s3_bucket_website_configuration" "b" {
@@ -21,14 +21,6 @@ resource "aws_s3_bucket_public_access_block" "b" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-}
-
-# Enable versioning for rollback capability
-resource "aws_s3_bucket_versioning" "b" {
-  bucket = aws_s3_bucket.b.id
-  versioning_configuration {
-    status = "Enabled"
-  }
 }
 
 # Create Origin Access Control
@@ -82,7 +74,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
   price_class         = "PriceClass_200"  
-  aliases             = ["vkiez.xyz", "*.vkiez.xyz"]
+  aliases             = var.domain_aliases
 
   # Custom error response for SPA routing
   custom_error_response {
@@ -140,8 +132,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 # ACM Certificate for custom domain
 resource "aws_acm_certificate" "cert" {
-  domain_name               = "vkiez.xyz"           # Root domain
-  subject_alternative_names = ["*.vkiez.xyz"]       # Wildcard for subdomains
+  domain_name               = var.root_domain          # Root domain
+  subject_alternative_names = var.certificate_sans       # Wildcard for subdomains
   validation_method         = "DNS"
   provider                  = aws.us-east-1
 

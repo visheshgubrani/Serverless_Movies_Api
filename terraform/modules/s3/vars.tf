@@ -1,1 +1,1 @@
-variable "s3_bucket_name" {}
+variable "cover_images_s3_bucket_name" {}

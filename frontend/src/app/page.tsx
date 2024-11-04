@@ -31,7 +31,7 @@ type MovieSummary = Movie & {
   generatedSummary: string
 }
 
-const BASE_URL = "https://y6fyxfdzr3.execute-api.ap-south-1.amazonaws.com/v1"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 const MovieExplorer = () => {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -61,7 +61,7 @@ const MovieExplorer = () => {
   }
 
   const filterMoviesByYear = async () => {
-    if (!yearFilter) {
+    if (!yearFilter.trim()) {
       setFilteredMovies(movies)
       return
     }
@@ -69,9 +69,12 @@ const MovieExplorer = () => {
       const response = await fetch(`${BASE_URL}/getmoviesbyyear/${yearFilter}`)
       if (!response.ok) throw new Error("Failed to fetch movies by year")
       const data = await response.json()
+      // Directly set the filtered data without clearing first
       setFilteredMovies(data)
     } catch (err) {
       setError(`Failed to filter movies. Please try again later. ${err}`)
+      // On error, show all movies instead of empty state
+      setFilteredMovies(movies)
     }
   }
 
@@ -85,7 +88,7 @@ const MovieExplorer = () => {
       const data = await response.json()
       setSelectedMovie(data)
     } catch (err) {
-      setError(`Failed to load movie. Please try again later. ${err}`)
+      setError(`Failed to load movie summary. Please try again later. ${err}`)
     } finally {
       setSummaryLoading(false)
     }
@@ -93,13 +96,13 @@ const MovieExplorer = () => {
 
   const resetFilters = () => {
     setYearFilter("")
-    setFilteredMovies(movies)
+    setFilteredMovies(movies) // Reset to original movies instead of fetching again
   }
 
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     )
   if (error)
@@ -133,8 +136,8 @@ const MovieExplorer = () => {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredMovies.map((movie) => (
-          <Dialog key={movie.title}>
+        {filteredMovies.map((movie, index) => (
+          <Dialog key={`${movie.title}-${index}`}>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -144,6 +147,8 @@ const MovieExplorer = () => {
                   <Image
                     src={movie.coverUrl}
                     alt={movie.title}
+                    width={300}
+                    height={192}
                     className="w-full h-48 object-cover rounded-md"
                   />
                 </CardContent>
@@ -162,6 +167,8 @@ const MovieExplorer = () => {
                 <Image
                   src={movie.coverUrl}
                   alt={movie.title}
+                  width={600}
+                  height={384}
                   className="w-full h-64 object-cover rounded-md mb-4"
                 />
                 <p>

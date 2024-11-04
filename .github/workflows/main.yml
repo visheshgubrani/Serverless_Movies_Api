@@ -1,4 +1,4 @@
-name: 'Terraform Pipeline'
+name: "Terraform Pipeline"
 
 on:
   push:
@@ -8,17 +8,22 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-  AWS_REGION: 'ap-south-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: "ap-south-1"
   TF_VAR_api_key: ${{ secrets.GEMINI_API_KEY }}
   TF_VAR_accountId: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: "Terraform"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     defaults:
       run:
@@ -26,24 +31,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
-
-      - name: Install Lambda Dependencies
-        run: |
-          for dir in ./modules/lambda/*/
-          do
-            if [ -f "${dir}package.json" ]; then
-              echo "Installing dependencies in ${dir}"
-              cd "${dir}"
-              npm ci
-              cd -
-            fi
-          done
+        uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -54,34 +42,44 @@ jobs:
       - name: Terraform Validate
         run: terraform validate -no-color
 
+      - name: Terraform Format
+        run: terraform fmt -check
+
       - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -input=false -no-color
 
-  upload_movies:
-    name: 'Upload Movies Data'
-    needs: terraform
+  frontend:
+    name: "Upload Static Site to S3"
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && contains(github.event.commits[0].modified, 'scripts/upload_movies/movies.js')
+    needs: terraform
+    if: github.event_name == 'push' && contains(github.event.commits[0].modified, 'frontend/')
 
     defaults:
       run:
-        working-directory: ./scripts/upload_movies
+        working-directory: ./frontend
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Upload Script
-        run: node index.js
-        env:
-          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          AWS_REGION: 'ap-south-1'
+      - name: Build Project
+        run: npm run build
+
+      - name: Upload to S3
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "ap-south-1"
+
+      - name: Sync build to S3
+        run: aws s3 sync ./out s3://www.moviesapi.xyz --delete
