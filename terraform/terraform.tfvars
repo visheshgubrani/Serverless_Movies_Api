@@ -14,9 +14,9 @@ lambda_dynamodb_read_policy = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAcc
 role_name                   = "iam_policy_for_lambda"
 
 # Cloudfront
-root_domain = "moviesapi.xyz"
-domain_aliases = ["moviesapi.xyz", "*.moviesapi.xyz"]
-certificate_sans = ["*.moviesapi.xyz"]
+root_domain             = "moviesapi.xyz"
+domain_aliases          = ["moviesapi.xyz", "*.moviesapi.xyz"]
+certificate_sans        = ["*.moviesapi.xyz"]
 static_site_bucket_name = "www.moviesapi.xyz"
 
 # api_key and accountId will be handled securely via environment variables

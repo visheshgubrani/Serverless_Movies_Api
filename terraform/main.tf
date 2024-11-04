@@ -10,7 +10,7 @@ module "dynamo_db_table" {
 
 # S3 Bucket
 module "s3_bucket" {
-  source         = "./modules/s3"
+  source                      = "./modules/s3"
   cover_images_s3_bucket_name = var.cover_images_s3_bucket_name
 }
 
@@ -108,7 +108,7 @@ module "cloudfront" {
     aws.us-east-1 = aws.us_east_1
   }
   static_site_bucket_name = var.static_site_bucket_name
-  root_domain = var.root_domain
-  domain_aliases = var.domain_aliases
-  certificate_sans = var.certificate_sans
+  root_domain             = var.root_domain
+  domain_aliases          = var.domain_aliases
+  certificate_sans        = var.certificate_sans
 }
