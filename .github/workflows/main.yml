@@ -36,6 +36,26 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install aiGeneratedSummary Lambda dependencies
+        run: |
+          cd ./modules/lambda/aiGeneratedSummary
+          npm install
+
+      - name: Install getMovies Lambda dependencies
+        run: |
+          cd ./modules/lambda/getMovies
+          npm install
+
+      - name: Install getMoviesByYear Lambda dependencies
+        run: |
+          cd ./modules/lambda/getMoviesByYear
+          npm install
+
       - name: Terraform Init
         run: terraform init
 
@@ -50,7 +70,6 @@ jobs:
     name: "Upload Static Site to S3"
     runs-on: ubuntu-latest
     needs: terraform
-    if: github.event_name == 'push' && contains(github.event.commits[0].modified, 'frontend/')
 
     defaults:
       run:
