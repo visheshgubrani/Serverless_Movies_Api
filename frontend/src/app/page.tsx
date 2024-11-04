@@ -165,14 +165,14 @@ const MovieExplorer = () => {
                 </CardFooter>
               </Card>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-hidden flex flex-col">
-              <DialogHeader>
+            <DialogContent className="sm:max-w-[425px] h-[90vh] p-0 overflow-hidden flex flex-col">
+              <DialogHeader className="px-4 py-2 sticky top-0 bg-background z-10 flex-shrink-0">
                 <DialogTitle>{movie.title}</DialogTitle>
+                <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </DialogClose>
               </DialogHeader>
-              <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-              </DialogClose>
               <ScrollArea className="flex-grow">
                 <div className="p-4 pb-8">
                   <Image
