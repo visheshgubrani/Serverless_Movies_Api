@@ -13,6 +13,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket" {
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = aws_s3_bucket.s3_bucket.id
+  depends_on = [aws_s3_bucket_public_access_block.s3_bucket]
 
   policy = jsonencode({
     Version = "2012-10-17"

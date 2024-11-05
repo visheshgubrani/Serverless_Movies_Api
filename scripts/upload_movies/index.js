@@ -2,6 +2,9 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb"
 import { v4 as uuidv4 } from "uuid"
 import { movies } from "./updated_movies.js"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const client = new DynamoDBClient({})
 const doClient = DynamoDBDocumentClient.from(client)
@@ -10,7 +13,7 @@ const uploadMovies = async () => {
   try {
     for (const movie of movies) {
       const command = new PutCommand({
-        TableName: "movies",
+        TableName: process.env.DYNAMODB_TABLE_NAME,
         Item: {
           id: uuidv4(),
           ...movie,

@@ -1,5 +1,6 @@
 node_modules
 .env
+updated_movies.js
 # Local .terraform directories
 **/.terraform/*
 
